@@ -74,9 +74,20 @@ d8_test_sets = [
 		'format': 'esri',
 		# source: http://www.nws.noaa.gov/oh/hrl/gis/data.html
 	},
-
-
-
+	{
+		'dem': np.array([[  1,  4,  6, 12, 20, 44 ],
+						 [  3,  4,  8, 11, 13, 24 ],
+						 [  5,  8, 15, 20, 25, 39 ],
+						 [  9, 14, 22, 32, 37, 47 ],
+						 [ 12, 18, 31, 39, 44, 52 ],
+						 [ 14, 26, 36, 43, 48, 58 ]]),
+		'dirs': np.array([[ 32, 16, 32, 16],
+						  [ 64, 32, 64, 64],
+						  [ 32, 32, 32, 32],
+						  [ 32, 16, 32, 32]]),
+		'format': 'esri',
+		# source: http://www.geo.uzh.ch/microsite/geo372/PDF/GEO372_W7_Hydrology_2013.pdf
+	},	
 ]
 
 
