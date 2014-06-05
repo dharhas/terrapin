@@ -22,17 +22,23 @@ def d8(dem):
 	# find indetermate points, argmax returns first occurance of max so lets reverse it 
 	# and try again. If the indices don't match then the point is indeterminate
 	reversed_indices = 7 - stacked[:,:,::-1].argmax(axis=2) 
-	directions[reversed_indices!=directions] = -999
+	directions[reversed_indices!=directions] = -1
 
 	return directions
 
 
 def convert_directions(directions, fmt):
+	if fmt not in ['esri', 'taudem']:
+		raise NotImplementedError('Format %s not implemented' % fmt)
+
 	if fmt=='esri':
 		convert = np.vectorize(lambda x:2**((8-x)%8))
-		return convert(directions)
+		converted = convert(directions)
 
 	if fmt=='taudem':
-		return directions + 1
+		converted = directions + 1
 
-	raise NotImplementedError('Format %s not implemented' % fmt)
+	# maintain indeterminite points
+	converted[directions==-1] = -1 
+
+	return converted	
