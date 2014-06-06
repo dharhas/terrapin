@@ -1,9 +1,9 @@
 import numpy as np
 from numpy.testing import assert_equal
-from terrapin.flow_direction import d8, convert_directions
+from terrapin.flow_direction import d8, convert_d8_directions
 
 
-def test_convert_directions():
+def test_convert_d8_directions():
 	test_sets = [	
 		('esri', 
 		np.array([0, 1, 2, 3, 4, 5, 6, 7]),
@@ -12,11 +12,19 @@ def test_convert_directions():
 		('taudem',
 		np.array([0, 1, 2, 3, 4, 5, 6, 7]),
 		np.array([1, 2, 3, 4, 5, 6, 7, 8])
-		), 
+		),
+		('degrees',
+		np.array([0, 1, 2, 3, 4, 5, 6, 7]),
+		np.array([0, 45, 90, 135, 180, 225, 270, 315])
+		),
+		('radians',
+		np.array([0, 1, 2, 3, 4, 5, 6, 7]),
+		np.array([0, 1, 2, 3, 4, 5, 6, 7]) * (0.25 * np.pi)
+		),
 	]
 
 	for fmt, directions, converted in test_sets:
-		assert_equal(convert_directions(directions, fmt), converted)
+		assert_equal(convert_d8_directions(directions, fmt), converted)
 
 
 def test_d8_cardinal_directions():
@@ -95,6 +103,6 @@ def test_d8():
 	for test_set in d8_test_sets:
 		directions = d8(test_set['dem'])
 		if test_set['format']:
-			directions = convert_directions(directions, test_set['format'])
+			directions = convert_d8_directions(directions, test_set['format'])
 
 		assert_equal(directions, test_set['dirs'])

@@ -27,8 +27,8 @@ def d8(dem):
 	return directions
 
 
-def convert_directions(directions, fmt):
-	if fmt not in ['esri', 'taudem']:
+def convert_d8_directions(directions, fmt):
+	if fmt not in ['esri', 'taudem', 'degrees', 'radians']:
 		raise NotImplementedError('Format %s not implemented' % fmt)
 
 	if fmt=='esri':
@@ -38,7 +38,13 @@ def convert_directions(directions, fmt):
 	if fmt=='taudem':
 		converted = directions + 1
 
-	# maintain indeterminite points
+	if fmt=='degrees':
+		converted = directions * 45
+
+	if fmt=='radians':
+		converted = directions * np.pi * 0.25
+
+	# maintain indeterminate points
 	converted[directions==-1] = -1 
 
 	return converted	
