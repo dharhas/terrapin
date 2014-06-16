@@ -47,4 +47,25 @@ def convert_d8_directions(directions, fmt):
 	# maintain indeterminate points
 	converted[directions==-1] = -1 
 
-	return converted	
+	return converted
+
+
+def get_connected_points(neighborhood, mdim):
+	mask = np.array([
+		[7,  6, 5],
+		[0, -1, 4],
+		[1,  2, 3]])
+
+	i, j = np.where(dirs[0:3,0:3] == mask)
+	return i*mdim + j
+
+
+def flow_accumulation(directions, pour_point):
+	"""
+	directions:
+		3 2 1
+		4 x 0
+		5 6 7
+	"""
+	#aread8(pour_point)
+	pass
