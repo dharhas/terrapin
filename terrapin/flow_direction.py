@@ -1,4 +1,5 @@
 import numpy as np
+from skimage.morphology import reconstruction
 
 def d8(dem):
 	"""
@@ -60,6 +61,19 @@ def get_connected_points(neighborhood, mdim):
 	return i*mdim + j
 
 
+def fill_flats(d8):
+	# simple method to get rid of indeterminate areas using 
+	# erosion.
+	# ref: http://scikit-image.org/docs/dev/auto_examples/plot_holes_and_peaks.html#example-plot-holes-and-peaks-py
+
+	seed = np.copy(d8)
+	seed[d8==-1] = d8.max()
+	mask = d8
+	filled = reconstruction(seed, mask, method='erosion')
+
+	return filled.astype(int)
+
+
 def flow_accumulation(directions, pour_point):
 	"""
 	directions:
@@ -69,3 +83,23 @@ def flow_accumulation(directions, pour_point):
 	"""
 	#aread8(pour_point)
 	pass
+
+# class d8():
+#     def __init__(self, arr):
+#        self.catchment = set()
+#        self.arr = arr
+
+#     def search(self, node):
+#         """ Searches all neighbouring nodes to find flow paths """ 
+
+#         # add the current node to the catchment
+#         self.catchment.add(node)
+
+#         # search the neighbours, ignore ones we already visited
+#         for each_neighbour:
+#             if neighbour is in self.catchment:
+#                do nothing
+
+#             # if the neighbour flows into the current node, visit that neighbour
+#             elif neighbour_flows_into_me:
+#                self.search(neighbour)
