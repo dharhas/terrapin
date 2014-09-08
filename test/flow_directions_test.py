@@ -26,8 +26,8 @@ def test_convert_d8_directions():
 	for fmt, directions, converted in test_sets:
 		assert_equal(convert_d8_directions(directions, fmt), converted)
 
-   for fmt, converted, directions in test_sets:
-       assert_equal(convert_d8_directions(directions, fmt, inverse=True), converted)
+	for fmt, converted, directions in test_sets:
+		assert_equal(convert_d8_directions(directions, fmt, inverse=True), converted)
 
 
 def test_d8_cardinal_directions():

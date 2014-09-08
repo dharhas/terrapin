@@ -29,27 +29,27 @@ def d8(dem):
 
 
 def convert_d8_directions(directions, fmt, inverse=False):
-   if not fmt:
-       return directions
+	if not fmt:
+		return directions
 
 	if fmt not in ['esri', 'taudem', 'degrees', 'radians']:
 		raise NotImplementedError('Format %s not implemented' % fmt)
 
-   if inverse:
-       if fmt=='esri':
-           converted = (8 - (np.log2(directions)).astype(int)) % 8
-           converted = converted.squeeze()
+	if inverse:
+		if fmt=='esri':
+			converted = (8 - (np.log2(directions)).astype(int)) % 8
+			converted = converted.squeeze()
 
-       if fmt=='taudem':
-           converted = directions - 1
+		if fmt=='taudem':
+			converted = directions - 1
 
-       if fmt=='degrees':
-           converted = (directions / 45).astype(int)
+		if fmt=='degrees':
+			converted = (directions / 45).astype(int)
 
-       if fmt=='radians':
-           converted = (directions / (np.pi * 0.25)).astype(int)
+		if fmt=='radians':
+			converted = (directions / (np.pi * 0.25)).astype(int)
 
-       return converted
+		return converted
 
 	if fmt=='esri':
 		convert = np.vectorize(lambda x:2**((8-x)%8))
@@ -71,7 +71,7 @@ def convert_d8_directions(directions, fmt, inverse=False):
 
 
 def fill_flats(d8):
-   # simple method to get rid of indeterminate areas using erosion.
+	# simple method to get rid of indeterminate areas using erosion.
 	# ref: http://scikit-image.org/docs/dev/auto_examples/plot_holes_and_peaks.html#example-plot-holes-and-peaks-py
 
 	seed = np.copy(d8)
@@ -82,32 +82,40 @@ def fill_flats(d8):
 	return filled.astype(int)
 
 
-def flow_accumulation(directions, pour_point):
-	"""
-	directions:
-		3 2 1
-		4 x 0
-		5 6 7
-	"""
-	#aread8(pour_point)
-	pass
+class aread8():
+	def __init__(self, d8):
+		self.visited = set()
+		self.accumulation = np.zeros_like(d8)
+		self.d8 = d8
+		self.padded = np.zeros((d8.shape[0]+2,d8.shape[1]+2))
+		self.padded[:] = np.nan
+		self.padded[1:-1,1:-1] = d8
 
-# class d8():
-#     def __init__(self, arr):
-#        self.catchment = set()
-#        self.arr = arr
+	def accumulate(self):
+		rows, cols = self.d8.shape
+		for i in range(rows):
+			for j in range(cols):
+				if (i,j) not in self.visited:
+					self.area(i,j)
 
-#     def search(self, node):
-#         """ Searches all neighbouring nodes to find flow paths """ 
+	def area(self, i, j):
+		if (i,j) in self.visited:
+			return self.accumulation[i,j]
+		else:
+			self.visited.add((i,j))
+			for m, n in self._inflow_nodes(i,j):
+				self.accumulation[i,j] += 1
+				self.accumulation[i,j] += self.area(m, n) 
+			return self.accumulation[i,j]
 
-#         # add the current node to the catchment
-#         self.catchment.add(node)
+	def _inflow_nodes(self, i,j):
 
-#         # search the neighbours, ignore ones we already visited
-#         for each_neighbour:
-#             if neighbour is in self.catchment:
-#                do nothing
+		mask = np.array([
+			[7,  6, 5],
+			[0, -1, 4],
+			[1,  2, 3]])
 
-#             # if the neighbour flows into the current node, visit that neighbour
-#             elif neighbour_flows_into_me:
-#                self.search(neighbour)
+		# padded is offset +1,+1 from d8
+		m, n = np.where(self.padded[i:i+3,j:j+3] == mask)
+				
+		return zip(i+m-1, j+n-1)
