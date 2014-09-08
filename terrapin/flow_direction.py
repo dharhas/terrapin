@@ -28,9 +28,28 @@ def d8(dem):
 	return directions
 
 
-def convert_d8_directions(directions, fmt):
+def convert_d8_directions(directions, fmt, inverse=False):
+   if not fmt:
+       return directions
+
 	if fmt not in ['esri', 'taudem', 'degrees', 'radians']:
 		raise NotImplementedError('Format %s not implemented' % fmt)
+
+   if inverse:
+       if fmt=='esri':
+           converted = (8 - (np.log2(directions)).astype(int)) % 8
+           converted = converted.squeeze()
+
+       if fmt=='taudem':
+           converted = directions - 1
+
+       if fmt=='degrees':
+           converted = (directions / 45).astype(int)
+
+       if fmt=='radians':
+           converted = (directions / (np.pi * 0.25)).astype(int)
+
+       return converted
 
 	if fmt=='esri':
 		convert = np.vectorize(lambda x:2**((8-x)%8))
@@ -51,19 +70,8 @@ def convert_d8_directions(directions, fmt):
 	return converted
 
 
-def get_connected_points(neighborhood, mdim):
-	mask = np.array([
-		[7,  6, 5],
-		[0, -1, 4],
-		[1,  2, 3]])
-
-	i, j = np.where(dirs[0:3,0:3] == mask)
-	return i*mdim + j
-
-
 def fill_flats(d8):
-	# simple method to get rid of indeterminate areas using 
-	# erosion.
+   # simple method to get rid of indeterminate areas using erosion.
 	# ref: http://scikit-image.org/docs/dev/auto_examples/plot_holes_and_peaks.html#example-plot-holes-and-peaks-py
 
 	seed = np.copy(d8)
