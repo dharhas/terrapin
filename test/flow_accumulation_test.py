@@ -55,12 +55,12 @@ test_sets = [
         [ 4,  4,  1,  4, 16, 16],
         ]),
     np.array([
-        [0, 3, 0, 4, 1, 0],
+        [0, 3, 0, 5, 1, 0], # the 5 is a 9 in the paper which is wrong.
         [0, 0, 0, 0, 0, 0],
         [5, 1, 0, 0, 1, 3],
         [0, 0, 0, 0, 0, 0],
         [0, 0, 0, 5, 0, 1],
-        [1, 1, 0, 11, 3, 2], #the 11 is a 9 in the paper which is wrong. 
+        [1, 1, 0, 11, 3, 2], # the 11 is a 9 in the paper which is wrong. 
         ])
     ],
 
